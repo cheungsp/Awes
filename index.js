@@ -37,10 +37,23 @@ function renderQuestionList (questions) {
 
 function renderQuestionDetails (question) {
   return `
+    <a href class="back-button">Back</a>
     <h1>${question.title}</h1>
     <p>${question.body}</p>
     <p><strong>Author:</strong> ${question.author_full_name}</p>
+    <h2>Answers</h2>
+    ${renderAnswerList(question.answers)}
   `;
+}
+
+function renderAnswerList (answers) {
+  return `
+  <ul class="answer-list">
+    ${
+      answers.map(({body}) => `<li>${body}</li>`).join('')
+    }
+  </ul>
+  `
 }
 
 
@@ -59,8 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = target.getAttribute('data-id');
       getQuestion(id)
         .then(question => {
+          questionList.classList.add('hidden');
           questionDetails.innerHTML = renderQuestionDetails(question);
+          questionDetails.classList.remove('hidden');
         });
+    }
+
+    if (target.matches('a.back-button')){
+      event.preventDefault();
+      questionList.classList.remove('hidden');
+      questionDetails.classList.add('hidden');
     }
   });
 });
