@@ -10,10 +10,23 @@ function getQuestions () {
     .then(res => res.json());
 }
 
+function getQuestion (id) {
+  const headers = new Headers({
+    'Authorization':`Apikey ${API_KEY}`
+  });
+  return fetch(`${BASE_URL}/questions/${id}`, {headers})
+    // A better practice when handling response from fetch is to check its
+    // status if it was successful (Status: 200 OK) before parsing it as json
+    // with (res.json()).
+    .then(res => res.json());
+}
+
 function renderQuestionSummary (question) {
   return `
     <div class="question-summary">
-      ${question.title}
+      <a href>
+        ${question.title}
+      </a>
     </div>
   `;
 }
@@ -28,4 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // console.log(renderQuestionList(questions));
     questionList.innerHTML = renderQuestionList(questions);
   })
+
+
 });
