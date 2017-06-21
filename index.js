@@ -5,7 +5,7 @@ const API_KEY = "ca6fdb783ce0745592d05d60fe33f461bf824c23866d6a92298ac8f30c68cc1
 function getQuestions () {
   const headers = new Headers({
     'Authorization':`Apikey ${API_KEY}`
-  })
+  });
   return fetch(`${BASE_URL}/questions`, {headers})
     .then(res => res.json());
 }
@@ -15,32 +15,52 @@ function getQuestion (id) {
     'Authorization':`Apikey ${API_KEY}`
   });
   return fetch(`${BASE_URL}/questions/${id}`, {headers})
-    // A better practice when handling response from fetch is to check its
-    // status if it was successful (Status: 200 OK) before parsing it as json
-    // with (res.json()).
+  // A better practice when handling response from fetch
+  // is to check its status if it was successful (Status: 200 OK)
+  // before parsing as json with (res.json()).
     .then(res => res.json());
 }
 
 function renderQuestionSummary (question) {
   return `
     <div class="question-summary">
-      <a href>
+      <a href class="question-link" data-id="${question.id}">
         ${question.title}
       </a>
     </div>
   `;
 }
+
 function renderQuestionList (questions) {
   return questions.map(renderQuestionSummary).join('');
 }
 
+function renderQuestionDetails (question) {
+  return `
+    <h1>${question.title}</h1>
+    <p>${question.body}</p>
+    <p><strong>Author:</strong> ${question.author_full_name}</p>
+  `;
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const questionList = document.querySelector('#questions-list');
+  const questionDetails = document.querySelector('#question-details');
 
   getQuestions().then(questions => {
-    // console.log(renderQuestionList(questions));
     questionList.innerHTML = renderQuestionList(questions);
   })
 
-
+  questionList.addEventListener('click', event => {
+    const {target} = event;
+    if (target.matches('a.question-link')) {
+      event.preventDefault();
+      const id = target.getAttribute('data-id');
+      getQuestion(id)
+        .then(question => {
+          questionDetails.innerHTML = renderQuestionDetails(question);
+        });
+    }
+  });
 });
