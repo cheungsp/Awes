@@ -9,6 +9,18 @@
   <body>
     <h1>Awesome Answers</h1>
 
+    <form id="question-form">
+      <div>
+        <label for="title">Title: </title>
+        <input id="title" name="question[title]" />
+      </div>
+
+      <div>
+        <textarea name="question[body]" rows="8" cols="80"></textarea>
+      </div>
+      <input type="submit" name="" value="Submit" />
+    </form>
+
     <div id="question-details"></div>
     <div id="questions-list"></div>
   </body>

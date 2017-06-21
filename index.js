@@ -1,7 +1,18 @@
 const BASE_URL = 'http://localhost:3000/api/v1';
 const API_KEY = "ca6fdb783ce0745592d05d60fe33f461bf824c23866d6a92298ac8f30c68cc1f"
 
-// function that takes a question object and outputs as string
+function postQuestion (questionFormData) {
+  const headers = new Headers({
+    'Authorization':`Apikey ${API_KEY}`
+  });
+  return fetch(`${BASE_URL}/questions`, {
+    method: 'POST',
+    body: questionFormData,
+    headers
+  })
+    .then(res => res.json());
+}
+
 function getQuestions () {
   const headers = new Headers({
     'Authorization':`Apikey ${API_KEY}`
@@ -48,11 +59,11 @@ function renderQuestionDetails (question) {
 
 function renderAnswerList (answers) {
   return `
-  <ul class="answer-list">
-    ${
-      answers.map(({body}) => `<li>${body}</li>`).join('')
-    }
-  </ul>
+    <ul class="answer-list">
+      ${
+        answers.map(({body}) => `<li>${body}</li>`).join('')
+      }
+    </ul>
   `
 }
 
@@ -60,9 +71,29 @@ function renderAnswerList (answers) {
 document.addEventListener('DOMContentLoaded', () => {
   const questionList = document.querySelector('#questions-list');
   const questionDetails = document.querySelector('#question-details');
+  const questionForm = document.querySelector('#question-form');
+
+  function showQuestion (id) {
+    getQuestion(id)
+      .then(question => {
+        questionList.classList.add('hidden');
+        questionDetails.innerHTML = renderQuestionDetails(question);
+        questionDetails.classList.remove('hidden');
+      });
+  }
 
   getQuestions().then(questions => {
     questionList.innerHTML = renderQuestionList(questions);
+  })
+
+  questionForm.addEventListener('submit', event => {
+    const { currentTarget } = event;
+    event.preventDefault();
+
+    postQuestion(new FormData(currentTarget))
+      .then(({id}) => {
+        showQuestion(id);
+      })
   })
 
   questionList.addEventListener('click', event => {
@@ -70,15 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (target.matches('a.question-link')) {
       event.preventDefault();
       const id = target.getAttribute('data-id');
-      getQuestion(id)
-        .then(question => {
-          questionList.classList.add('hidden');
-          questionDetails.innerHTML = renderQuestionDetails(question);
-          questionDetails.classList.remove('hidden');
-        });
+      showQuestion(id);
     }
 
-    if (target.matches('a.back-button')){
+    if (target.matches('a.back-button')) {
       event.preventDefault();
       questionList.classList.remove('hidden');
       questionDetails.classList.add('hidden');
