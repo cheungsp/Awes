@@ -7,9 +7,15 @@
     <link rel="stylesheet" href="index.css">
   </head>
   <body>
+    <nav>
+      <a href id="nav-question-index">All Questions</a>
+      |
+      <a href id="nav-question-new">New Question</a>
+    </nav>
+
     <h1>Awesome Answers</h1>
 
-    <form id="question-form">
+    <form id="question-form" class="hidden">
       <div>
         <label for="title">Title: </title>
         <input id="title" name="question[title]" />
@@ -21,7 +27,7 @@
       <input type="submit" name="" value="Submit" />
     </form>
 
-    <div id="question-details"></div>
+    <div id="question-details" class="hidden"></div>
     <div id="questions-list"></div>
   </body>
 </html>
